@@ -29,7 +29,7 @@ carController.getCars = async (req, res, next) => {
       res,
       200,
       true,
-      { car: listOfFound, page: page, total: listOfFound.length },
+      { cars: listOfFound, page: page, total: listOfFound.length },
       null,
       "Get Car List Successfully!"
     );
