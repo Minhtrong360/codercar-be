@@ -17,18 +17,19 @@ carController.createCar = async (req, res, next) => {
 };
 
 carController.getCars = async (req, res, next) => {
-  const filter = req.query ? req.query : {};
+  const page = req.query.page ? req.query.page : 1;
+  const filter = req.query.filter ? req.query.filter : {};
 
   try {
     // YOUR CODE HERE
     //mongoose query
-    const listOfFound = await Car.find(filter);
+    const listOfFound = await Car.find(filter).limit(Number(page) * 20);
     console.log("first", listOfFound.length);
     sendResponse(
       res,
       200,
       true,
-      { car: listOfFound, page: 1, total: listOfFound.length },
+      { car: listOfFound, page: page, total: listOfFound.length },
       null,
       "Get Car List Successfully!"
     );
