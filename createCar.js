@@ -20,7 +20,25 @@ const createCar = async () => {
 
   data.data = newData;
   data.totalCar = newData.length;
+
+  // function unique(arr) {
+  //   var newArr = [];
+  //   for (var i = 0; i < arr.length; i++) {
+  //     if (newArr.indexOf(arr[i]) === -1) {
+  //       newArr.push(arr[i]);
+  //     }
+  //   }
+  //   return newArr;
+  // }
+
+  // for (let x = 0; x < data.totalCar; x++) {
+  //   var styleCar = [];
+  //   styleCar.push(data.data[x].style);
+  // }
+  // console.log(styleCar);
+
   fs.writeFileSync("./archive/carData.json", JSON.stringify(data));
+
   console.log("Transform data successfully");
 };
 
