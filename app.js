@@ -25,6 +25,8 @@ mongoose
 
 const { sendResponse, AppError } = require("./helpers/utils.js");
 
+app.use("/", indexRouter);
+
 // catch 404 and forard to error handler
 // app.use((req, res, next) => {
 //   const err = new AppError(404, "Not Found", "Bad Request");
@@ -43,7 +45,5 @@ app.use((err, req, res, next) => {
     err.isOperational ? err.errorType : "Internal Server Error"
   );
 });
-
-app.use("/", indexRouter);
 
 module.exports = app;

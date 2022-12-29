@@ -126,12 +126,13 @@ carController.createCar = async (req, res, next) => {
 carController.getCars = async (req, res, next) => {
   const page = req.query.page ? req.query.page : 1;
   const filter = req.query.filter ? req.query.filter : {};
+  filter.isDeleted = false;
 
   try {
     // YOUR CODE HERE
     //mongoose query
     const listOfFound = await Car.find(filter).limit(Number(page) * 20);
-    console.log("first", listOfFound.length);
+
     sendResponse(
       res,
       200,
@@ -152,23 +153,15 @@ carController.editCar = async (req, res, next) => {
   // empty target and info mean update nothing
 
   const targetId = req.params.id;
-  console.log("first", targetId);
+
   const { make, model, price, release_date, size, style, transmission_type } =
     req.body;
-  console.log(
-    "second",
-    make,
-    model,
-    price,
-    release_date,
-    size,
-    style,
-    transmission_type
-  );
+
   //options allow you to modify query. e.g new true return lastest update of data
   const options = { new: true };
   try {
     //mongoose query
+    const findID = await Car.findById(targetId);
 
     if (
       !targetId ||
@@ -185,12 +178,18 @@ carController.editCar = async (req, res, next) => {
       throw error;
     }
 
-    if (!Car.findById(targetId)) {
+    if (!findID) {
       const error = new Error("Car does not exists.");
       error.statusCode = 500;
       throw error;
     }
-
+    if (findID.isDeleted) {
+      {
+        const error = new Error("Car does not exists to update.");
+        error.statusCode = 500;
+        throw error;
+      }
+    }
     if (!carMake.includes(make)) {
       const error = new Error("Car's brand does not exit");
       error.statusCode = 404;
@@ -245,7 +244,13 @@ carController.deleteCar = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-    const updated = await Car.findByIdAndDelete(targetId, options);
+
+    // const updated = await Car.findByIdAndDelete(targetId, options);
+    const updated = await Car.findByIdAndUpdate(
+      targetId,
+      { isDeleted: true },
+      options
+    );
 
     sendResponse(
       res,
