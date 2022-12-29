@@ -93,7 +93,9 @@ carController.createCar = async (req, res, next) => {
       throw new AppError(402, "Bad Request", "Create Car Error");
 
     if (!carMake.includes(make)) {
-      const error = new Error("Car does not exit");
+      const error = new Error(
+        "Car does not exit. You need to change your MAKE"
+      );
       error.statusCode = 404;
       throw error;
     }
@@ -105,13 +107,17 @@ carController.createCar = async (req, res, next) => {
     }
 
     if (!carTypes.includes(type)) {
-      const error = new Error("Type of car does not exit");
+      const error = new Error(
+        "Type of car does not exit. You need to change your TYPE"
+      );
       error.statusCode = 404;
       throw error;
     }
 
     if (!carStyles.includes(style)) {
-      const error = new Error("Style of car does not exit");
+      const error = new Error(
+        "Style of car does not exit. You need to change your STYLE"
+      );
       error.statusCode = 404;
       throw error;
     }
@@ -125,19 +131,25 @@ carController.createCar = async (req, res, next) => {
 
 carController.getCars = async (req, res, next) => {
   const page = req.query.page ? req.query.page : 1;
+  const limit = req.query.limit ? req.query.limit : 20;
   const filter = req.query.filter ? req.query.filter : {};
-  filter.isDeleted = false;
+  // filter.isDeleted = false;
+  // console.log("first", filter);
 
   try {
     // YOUR CODE HERE
     //mongoose query
-    const listOfFound = await Car.find(filter).limit(Number(page) * 20);
+    let skip = (Number(page) - 1) * Number(limit);
+    const listOfFound = await Car.find(filter);
+    const result = listOfFound
+      .filter((item) => item.isDeleted != true)
+      .slice(skip, Number(limit) + skip);
 
     sendResponse(
       res,
       200,
       true,
-      { cars: listOfFound, page: page, total: listOfFound.length },
+      { cars: result, page: page, total: result.length },
       null,
       "Get Car List Successfully!"
     );
